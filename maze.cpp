@@ -4,6 +4,7 @@
 #include <ctime>
 #include <algorithm>
 #include <cstdio>
+#include <windows.h>
 
 #ifdef _WIN32
 #include <conio.h>
@@ -106,6 +107,7 @@ int main() {
  #     # #     # ####### #######
     )" << std::endl;
 
+    std::cout << "Max dimensions = 29x119 (rows x columns)\n";
     std::cout << "*Enter amount of rows* \n";
     std::cin >> rows;
     std::cout << "*Enter amount of columns* \n";

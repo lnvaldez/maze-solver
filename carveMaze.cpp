@@ -6,6 +6,15 @@
 #include <thread>
 #include <chrono>
 
+#ifdef _WIN32
+#include <conio.h>
+#else
+#include <unistd.h>
+#endif
+
+const char* HIDE_CURSOR = "\033[?25l";
+const char* CLEAR_SCREEN = "\033[2J\033[H";
+
 // Directions arrays for moving up, down, left, right
 int dx[] = {0, 1, 0, -1};
 int dy[] = {-1, 0, 1, 0};
@@ -65,9 +74,18 @@ int main() {
     if (rows % 2 == 0) rows++;
     if (cols % 2 == 0) cols++;
 
+#ifdef _WIN32
+    system("cls");
+#else
+    printf("%s", CLEAR_SCREEN);
+#endif
+
     std::vector<std::vector<char>> maze(rows, std::vector<char>(cols, '#'));
 
     std::srand(std::time(0)); // Seed for randomness
+
+    // Hide the cursor
+    printf("%s", HIDE_CURSOR);
 
     // Start carving from (1, 1)
     carveMaze(maze, 1, 1, rows, cols);
