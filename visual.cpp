@@ -1,16 +1,12 @@
 #include <iostream>
 #include <vector>
+#include <random>
 #include <cstdlib>
 #include <ctime>
 #include <algorithm>
 #include <thread>
 #include <chrono>
-
-#ifdef _WIN32
 #include <conio.h>
-#else
-#include <unistd.h>
-#endif
 
 const char* HIDE_CURSOR = "\033[?25l";
 const char* CLEAR_SCREEN = "\033[2J\033[H";
@@ -46,7 +42,7 @@ void printMaze(const std::vector<std::vector<char>>& maze) {
 void carveMaze(std::vector<std::vector<char>>& maze, int x, int y, int rows, int cols) {
     maze[x][y] = ' ';
     printMaze(maze);
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));  // Delay for visualization
+    std::this_thread::sleep_for(std::chrono::milliseconds(25));  // Delay for visualization
 
     std::vector<int> directions = {0, 1, 2, 3};
     shuffleDirections(directions);
@@ -62,6 +58,13 @@ void carveMaze(std::vector<std::vector<char>>& maze, int x, int y, int rows, int
     }
 }
 
+void randomCarve(std::vector<std::vector<char>>& maze, int x, int y)
+{
+    if (maze[x][y] == '#') {
+        maze[x][y] = ' ';
+    }
+}
+
 int main() {
     int rows, cols;
 
@@ -74,13 +77,14 @@ int main() {
     if (rows % 2 == 0) rows++;
     if (cols % 2 == 0) cols++;
 
-#ifdef _WIN32
-    system("cls");
-#else
     printf("%s", CLEAR_SCREEN);
-#endif
 
     std::vector<std::vector<char>> maze(rows, std::vector<char>(cols, '#'));
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> disRow(1, rows - 2);
+    std::uniform_int_distribution<> disCol(1, cols - 2);
 
     std::srand(std::time(0)); // Seed for randomness
 
@@ -89,6 +93,16 @@ int main() {
 
     // Start carving from (1, 1)
     carveMaze(maze, 1, 1, rows, cols);
+
+    for (int i = 0; i < rows; ++i) {
+        int random_row = disRow(gen);
+        int random_col = disCol(gen);
+        if (maze[random_row][random_col] == '#') {
+            randomCarve(maze, random_row, random_col);
+            std::this_thread::sleep_for(std::chrono::milliseconds(750));
+            printMaze(maze);
+        }
+    }
 
     maze[1][0] = ' ';
     maze[rows - 2][cols - 1] = 'E';
