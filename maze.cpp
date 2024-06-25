@@ -1,11 +1,11 @@
 #include <iostream>
 #include <vector>
 #include <random>
-#include <cstdlib>
-#include <ctime>
-#include <algorithm>
-#include <cstdio>
-#include <conio.h>
+#include <cstdlib> // std::rand, std::srand
+#include <ctime> // Seeding random number generators
+#include <algorithm> // std::shuffle
+#include <cstdio> // printf, fflush
+#include <conio.h> // Console input/output functions, _getch
 
 const char* RED = "\033[31m";
 const char* NORMAL = "\033[0m";
@@ -18,9 +18,9 @@ int dy[] = {-1, 0, 1, 0};
 
 void shuffleDirections(std::vector<int>& directions)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::shuffle(directions.begin(), directions.end(), gen);
+    std::random_device rd; // Create random number source
+    std::mt19937 gen(rd()); // Mersenne Twister
+    std::shuffle(directions.begin(), directions.end(), gen); // Shuffle elements in directions vector
 }
 
 bool isValid(int x, int y, int rows, int cols, const std::vector<std::vector<char>>& maze)
@@ -31,11 +31,16 @@ bool isValid(int x, int y, int rows, int cols, const std::vector<std::vector<cha
 void printMaze(const std::vector<std::vector<char>>& maze)
 {
     printf("\033[H");
-    for (const auto& row : maze){
-        for (char cell : row) {
-            if (cell == '*') {
+    for (const auto& row : maze)
+    {
+        for (char cell : row) 
+        {
+            if (cell == '*') 
+            {
                 printf("%s%c%s", RED, cell, NORMAL);
-            } else {
+            } 
+            else 
+            {
                 printf("%c", cell);
             }
         }
@@ -51,11 +56,13 @@ void carveMaze(std::vector<std::vector<char>>& maze, int x, int y, int rows, int
     std::vector<int> directions = {0, 1, 2, 3};
     shuffleDirections(directions);
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i) 
+    {
         int nx = x + dx[directions[i]] * 2;
         int ny = y + dy[directions[i]] * 2;
 
-        if (isValid(nx, ny, rows, cols, maze)) {
+        if (isValid(nx, ny, rows, cols, maze)) 
+        {
             maze[x + dx[directions[i]]][y + dy[directions[i]]] = ' ';
             carveMaze(maze, nx, ny, rows, cols);
         }
@@ -64,7 +71,8 @@ void carveMaze(std::vector<std::vector<char>>& maze, int x, int y, int rows, int
 
 void randomCarve(std::vector<std::vector<char>>& maze, int x, int y)
 {
-    if (maze[x][y] == '#') {
+    if (maze[x][y] == '#') 
+    {
         maze[x][y] = ' ';
     }
 }
@@ -72,20 +80,24 @@ void randomCarve(std::vector<std::vector<char>>& maze, int x, int y)
 bool solveMaze(std::vector<std::vector<char>>& maze, int x, int y, int rows, int cols)
 {
     printMaze(maze);
-    if (x == rows - 2 && y == cols - 1) {
+    if (x == rows - 2 && y == cols - 1) 
+    {
         maze[x][y] = '*';
         printMaze(maze);
         return true;
     }
 
-    if (x >= 0 && x < rows && y >= 0 && y < cols && maze[x][y] == ' ') {
+    if (x >= 0 && x < rows && y >= 0 && y < cols && maze[x][y] == ' ') 
+    {
         maze[x][y] = '*';
 
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) 
+        {
             int nx = x + dx[i];
             int ny = y + dy[i];
 
-            if (solveMaze(maze, nx, ny, rows, cols)) {
+            if (solveMaze(maze, nx, ny, rows, cols)) 
+            {
                 return true;
             }
         }
@@ -102,7 +114,8 @@ void playMaze(std::vector<std::vector<char>>& maze, int rows, int cols)
     maze[x][y] = '*';
     printMaze(maze);
 
-    while (x != rows - 2 || y != cols - 1) {
+    while (x != rows - 2 || y != cols - 1) 
+    {
         int nx = x, ny = y;
         char move = _getch();
         switch (move) {
@@ -112,7 +125,8 @@ void playMaze(std::vector<std::vector<char>>& maze, int rows, int cols)
             case 'a': nx = x + dy[3]; ny = y + dx[3]; break;
         }
 
-        if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && maze[nx][ny] == ' ') {
+        if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && maze[nx][ny] == ' ') 
+        {
             maze[x][y] = ' ';
             x = nx;
             y = ny;
@@ -165,10 +179,12 @@ int main()
 
     carveMaze(maze, 1, 1, rows, cols);
 
-    for (int i = 0; i < rows; ++i) {
+    for (int i = 0; i < rows; ++i) 
+    {
         int random_row = disRow(gen);
         int random_col = disCol(gen);
-        if (maze[random_row][random_col] == '#') {
+        if (maze[random_row][random_col] == '#') 
+        {
             randomCarve(maze, random_row, random_col);
         }
     }
@@ -178,13 +194,18 @@ int main()
 
     printf("%s", HIDE_CURSOR);
 
-    if (choice == 1) {
-        if (!solveMaze(maze, 1, 0, rows, cols)) {
+    if (choice == 1) 
+    {
+        if (!solveMaze(maze, 1, 0, rows, cols)) 
+        {
             std::cout << "No solution found!" << std::endl;
         }
-    } else if (choice == 2) {
+    } else if (choice == 2) 
+    {
         playMaze(maze, rows, cols);
-    } else {
+    } 
+    else 
+    {
         std::cout << "Invalid choice!" << std::endl;
     }
 
